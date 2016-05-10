@@ -1,0 +1,31 @@
+{
+  "name": "skam-notifier",
+  "version": "1.0.0",
+  "description": "A service that will notify websocket clients when a new SKAM post appears",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andybb/skam-notifier.git"
+  },
+  "keywords": [
+    "SKAM",
+    "NRK",
+    "notifier",
+    "p3"
+  ],
+  "author": "Andreas Drivenes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andybb/skam-notifier/issues"
+  },
+  "homepage": "https://github.com/andybb/skam-notifier#readme",
+  "dependencies": {
+    "feedparser": "^1.1.4",
+    "node-fetch": "^1.5.2",
+    "ws": "^1.1.0"
+  }
+}
