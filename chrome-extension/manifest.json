@@ -5,12 +5,6 @@
   "web_accessible_resources": ["skam.jpg"],
   "homepage_url": "https://github.com/andybb/skam-notifier",
   "background": { "scripts": ["index.js"] },
-  "content_scripts": [
-    {
-      "matches": ["*://*/*"],
-      "js": ["popup.js"]
-    }
-  ],
   "permissions": [
     "tabs",
     "<all_urls>"
