@@ -1,7 +1,7 @@
 'use strict';
 
 const WebSocketServer = require('ws').Server;
-const parseFeed = require('./parseFeed');
+const parseSite = require('./parseSite');
 const fetch = require('node-fetch');
 
 const wss = new WebSocketServer({ port: 8080 });
@@ -21,28 +21,23 @@ wss.broadcast = function broadcast(data) {
 
 
 setInterval(() => {
-    fetch('http://skam.p3.no/feed/', 
+    fetch('http://skam.p3.no/',
         { headers: { 'user-agent': 'https://github.com/andybb/skam-notifier'}})
         .then((res) => {
-            return parseFeed(res.body);
+            return res.text();
         })
-        .then((data) => {
-            let lastPost = data[0];
-            let newDate = new Date(lastPost.date);
-
-            if (newDate > date) {
-                date = newDate;
-                let response = {
-                    title: lastPost.title,
-                    link: lastPost.link,
-                    date: lastPost.date
-                };
-                wss.broadcast(response);
+        .then((site) => {
+            return parseSite(site);
+        })
+        .then((post) => {
+            if (post.date > date) {
+                date = post.date
+                wss.broadcast(post);
             }
         })
         .catch((error) => {
             console.error(error);
         });
 
-}, 60000);
+}, 180000);
 
