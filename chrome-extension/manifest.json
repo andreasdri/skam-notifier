@@ -7,6 +7,8 @@
   "background": { "scripts": ["index.js"] },
   "permissions": [
     "tabs",
-    "<all_urls>"
+    "alarms",
+    "<all_urls>",
+    "*://*/*"
   ]
 }
