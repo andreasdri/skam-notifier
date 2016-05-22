@@ -2,16 +2,23 @@
 
 const WebSocketServer = require('ws').Server;
 const parseSite = require('./parseSite');
+const io = require('./fileUtilities');
 const fetch = require('node-fetch');
 
 const wss = new WebSocketServer({ port: 8080 });
-var date = new Date();
+
+io.episodeExists()
+    .then((exists) => {
+        if (!exists) {
+            io.writeNewEpisode(new Date());
+        }
+    });
 
 
-wss.broadcast = function broadcast(data) {
+wss.broadcast = function (data) {
     console.log('Number of connections: ' + wss.clients.length);
-    wss.clients.forEach(function each(client) {
-        client.send(JSON.stringify(data), function(error) {
+    wss.clients.forEach((client) => {
+        client.send(JSON.stringify(data), (error) => {
             if (error) {
                 console.error(error);
             }
@@ -23,21 +30,20 @@ wss.broadcast = function broadcast(data) {
 setInterval(() => {
     fetch('http://skam.p3.no/',
         { headers: { 'user-agent': 'https://github.com/andybb/skam-notifier'}})
-        .then((res) => {
-            return res.text();
-        })
-        .then((site) => {
-            return parseSite(site);
-        })
-        .then((post) => {
-            if (post.date > date) {
-                date = post.date
-                wss.broadcast(post);
+        .then((res) => res.text())
+        .then((site) => Promise.all([parseSite(site), io.readLastEpisode()]))
+        .then((data) => {
+            let episode = data[0];
+            let oldEpisode = new Date(data[1].toString());
+
+            if (episode.date > oldEpisode) {
+                wss.broadcast(episode);
+                return io.writeNewEpisode(episode.date);
             }
         })
         .catch((error) => {
             console.error(error);
         });
 
-}, 180000);
+}, 120000);
 
